@@ -7,7 +7,6 @@ server.on('request', (req, res) => {
         if (err) {
             console.log('error', err);
         }
-
         res.end(data);
     });
 });

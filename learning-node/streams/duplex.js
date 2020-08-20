@@ -6,7 +6,6 @@ const duplexStream = new Duplex({
     write(chunk, encoding, callback) {
         console.log(chunk.toString());
         callback();
-
     },
 
     read(size) {
