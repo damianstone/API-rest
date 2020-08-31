@@ -1,14 +1,17 @@
 const express = require('express');
-const { moviesMock } = require('../utils/mocks/movies');
+const MoviesService = require('../services/movies');
 
 function moviesApi(app){
     const router = express.Router();
     app.use('/api/movies', router);
 
+    const moviesService = new MoviesService
+
 
     router.get('/', async function(req, res, next){
+        const { tags } = req.query; // => query es cuando se pone en el signo de pregunta
         try {
-            const movies = await Promise.resolve(moviesMock);
+            const movies = await moviesService.getMovies({ tags })
             res.status(200).json({
                 data: movies,
                 message: 'movies listed'
@@ -20,8 +23,9 @@ function moviesApi(app){
     });
 
     router.get('/:movieId', async function(req, res, next){
+        const { movieId } = req.params; // => parametros es cuando estan establecidos en la url 
         try {
-            const movies = await Promise.resolve(moviesMock[0]);
+            const movies = await moviesService.getMovie({ movieId })
             res.status(200).json({
                 data: movies,
                 message: 'movies retrieved'
@@ -33,8 +37,9 @@ function moviesApi(app){
     });
 
     router.post('/', async function(req, res, next){
+        const { body: movie } = req; // => en este caso los datos provienen del cuerpo en JSON (ver postman)
         try {
-            const createMovieId = await Promise.resolve(moviesMock[0].id);
+            const createMovieId = await moviesService.createMovie({ movie })
             res.status(201).json({
                 data: createMovieId,
                 message: 'movie created'
@@ -46,8 +51,13 @@ function moviesApi(app){
     });
 
     router.put('/:movieId', async function(req, res, next){
+        const { movieId } = req.params; // => en este caso tambien los datos provenien direct. de la URL
+        const { body: movie } = req;
         try {
-            const updatedMovieId = await Promise.resolve(moviesMock[0].id);
+            const updatedMovieId = await moviesService.updatedMovie({ 
+                movieId,
+                movie
+            });
             res.status(200).json({
                 data: updatedMovieId,
                 message: 'movies updated'
@@ -59,8 +69,9 @@ function moviesApi(app){
     });
 
     router.delete('/:movieId', async function(req, res, next){
+        const { movieId } = req.params;
         try {
-            const deleteMovieId = await Promise.resolve(moviesMock[0].id);
+            const deleteMovieId = await moviesService.deleteMovie({ movieId });
             res.status(200).json({
                 data: deleteMovieId,
                 message: 'movie deleted'
