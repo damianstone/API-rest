@@ -4,18 +4,18 @@
 // con joi y boom se puede hacer la integracion para validar si esta funcionando 
 
 const boom = require('@hapi/boom');
+const joi = require('@hapi/joi');
 
-function validate() {
-    return false;
-}
+function validate(data, schema) {
+    const { error } = joi.object(schema).validate(data); // cambio en la validación
+    return error;
+};
 
-
-function validationhandler(schema, check ="body"){
+function validateHandler(schema, check = 'body'){
     return function(req, res, next) {
-        const error = validate(req[check], schema);
-
-        error ? next(boom.badRequest(error)) : next();
+        const err = validate(req[check], schema);
+        err ? next(boom.badRequest(err)): next();
     }
 }
 
-module.exports = validationhandler;
+module.exports = validateHandler;

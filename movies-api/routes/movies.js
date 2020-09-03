@@ -1,6 +1,14 @@
 const express = require('express');
 const MoviesService = require('../services/movies');
 
+const {
+    movieIdSchema,
+    createMovieSchema,
+    updateMovieSchema
+} = require('../utils/schema/movies');
+
+const validationhandler = require('../utils/middleware/validationhandler');
+
 function moviesApi(app){
     const router = express.Router();
     app.use('/api/movies', router);
@@ -22,7 +30,7 @@ function moviesApi(app){
         }
     });
 
-    router.get('/:movieId', async function(req, res, next){
+    router.get('/:movieId', validationhandler({ movieId: movieIdSchema}, 'params'), async function(req, res, next){
         const { movieId } = req.params; // => parametros es cuando estan establecidos en la url 
         try {
             const movies = await moviesService.getMovie({ movieId })
@@ -36,7 +44,7 @@ function moviesApi(app){
         }
     });
 
-    router.post('/', async function(req, res, next){
+    router.post('/', validationhandler(createMovieSchema), async function(req, res, next){
         const { body: movie } = req; // => en este caso los datos provienen del cuerpo en JSON (ver postman)
         try {
             const createMovieId = await moviesService.createMovie({ movie })
@@ -50,7 +58,7 @@ function moviesApi(app){
         }
     });
 
-    router.put('/:movieId', async function(req, res, next){
+    router.put('/:movieId', validationhandler({ movieId: movieIdSchema}, 'params'), validationhandler(updateMovieSchema), async function(req, res, next){
         const { movieId } = req.params; // => en este caso tambien los datos provenien direct. de la URL
         const { body: movie } = req;
         try {
@@ -68,7 +76,7 @@ function moviesApi(app){
         }
     });
 
-    router.delete('/:movieId', async function(req, res, next){
+    router.delete('/:movieId', validationhandler({ movieId: movieIdSchema}, 'params'), async function(req, res, next){
         const { movieId } = req.params;
         try {
             const deleteMovieId = await moviesService.deleteMovie({ movieId });
