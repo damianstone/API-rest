@@ -1,3 +1,6 @@
+// Crea el esquema para crear peliculas.
+// marco por el cual todas las peliculas que esten en el json tienen que regirse 
+
 const joi = require('@hapi/joi');
 
 const movieIdSchema = joi.string().regex(/^[0-9a-fA-F]{24}$/);
